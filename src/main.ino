@@ -45,7 +45,7 @@ void loop() {
 	// 4 bytes connected
 	// 4 bytes maximum connections
 	// 4 bytes bandwidth
-	int connected = respBuffer[15] + 2*respBuffer[14] + 4*respBuffer[13] + 8*respBuffer[12];
+	int connected = respBuffer[15];
 	Serial.print(connected);
 	Serial.println(" people are connected");
 	delay(100);
