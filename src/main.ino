@@ -1,4 +1,9 @@
-#include <WiFi.h>
+#if defined(ARDUINO_ARCH_ESP8266)
+	#include <ESP8266WiFi.h>
+#else
+	#include <WiFi.h>
+#endif
+
 #include <WiFiUdp.h>
 
 const char* ssid = "revspace-pub-2.4ghz";
@@ -20,6 +25,7 @@ char respBuffer[24];
 void setup() {
 	Serial.begin(115200);
 	WiFi.begin(ssid, password);
+	udp.begin(port);
 	Serial.println();
 	while (WiFi.status() != WL_CONNECTED) {
 		delay(100);
