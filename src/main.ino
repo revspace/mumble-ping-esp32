@@ -68,5 +68,5 @@ void loop() {
             leds[i] = CHSV(200, 255, i < connected ? 50 : 0);
         }
         FastLED.show();
-	delay(100);
+	delay(1000);
 }
