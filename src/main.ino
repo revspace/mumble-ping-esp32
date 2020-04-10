@@ -5,12 +5,17 @@
 #endif
 
 #include <WiFiUdp.h>
+#include <FastLED.h>
 
-const char* ssid = "revspace-pub-2.4ghz";
+const char* ssid = "";
 const char* password = "";
 
 const char* address = "revspace.nl";
 const int port = 64738;
+
+const int ledpin = 27;
+const int numleds = 25;
+CRGB leds[numleds];
 
 WiFiUDP udp;
 
@@ -27,9 +32,13 @@ void setup() {
 	WiFi.begin(ssid, password);
 	udp.begin(port);
 	Serial.println();
+        FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
+
 	while (WiFi.status() != WL_CONNECTED) {
-		delay(100);
-		Serial.print(".");
+            delay(200);
+            Serial.print(".");
+            CRGB c = CHSV(100, 255, 40);
+            FastLED.showColor(c);
 	}
 }
 
@@ -54,5 +63,9 @@ void loop() {
 	int connected = respBuffer[15];
 	Serial.print(connected);
 	Serial.println(" people are connected");
+        for (int i = 0; i < numleds; i++) {
+            leds[i] = CHSV(200, 255, i < connected ? 50 : 0);
+        }
+        FastLED.show();
 	delay(100);
 }
