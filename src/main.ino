@@ -34,10 +34,11 @@ void setup() {
 	Serial.println();
         FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
 
+        int i = 0;
 	while (WiFi.status() != WL_CONNECTED) {
-            delay(200);
-            Serial.print(".");
-            CRGB c = CHSV(100, 255, 40);
+            delay(50);
+            if (i % 10 == 0) Serial.print(".");
+            CRGB c = CHSV(i++, 255, 64);
             FastLED.showColor(c);
 	}
 }
