@@ -27,19 +27,71 @@ struct __attribute__ ((packed)) mumbleRequest {
 byte reqBuffer[12];
 char respBuffer[24];
 
+static int sprite[10][25]={{  0,1,1,1,0,
+							  1,1,0,1,1,
+							  1,0,0,0,1,
+							  1,1,0,1,1,
+							  0,1,1,1,0},
+							 {0,0,1,1,0,
+							  0,1,0,1,0,
+							  1,0,0,1,0,
+							  0,0,0,1,0,
+							  1,1,1,1,1},
+							 {1,1,1,1,0,
+							  0,0,1,1,1,
+							  0,1,1,0,0,
+							  1,1,0,0,0,
+							  1,1,1,1,1},
+							 {1,1,1,1,1,
+							  0,0,0,0,1,
+							  1,1,1,1,1,
+							  0,0,0,0,1,
+							  1,1,1,1,1},
+							 {0,0,0,0,1,
+							  0,0,1,1,1,
+							  0,1,1,0,1,
+							  1,1,1,1,1,
+							  0,0,0,1,0},
+							 {1,1,1,1,1,
+							  1,0,0,0,0,
+							  1,1,1,1,1,
+							  0,0,0,0,1,
+							  1,1,1,1,1},
+							 {1,1,1,1,1,
+							  1,0,0,0,0,
+							  1,1,1,1,1,
+							  1,0,0,0,1,
+							  1,1,1,1,1},
+							 {1,1,1,1,1,
+							  0,0,0,1,1,
+							  0,0,1,1,0,
+							  0,1,1,0,0,
+							  1,1,0,0,0},
+							 {1,1,1,1,1,
+							  1,0,0,0,1,
+							  1,1,1,1,1,
+							  1,0,0,0,1,
+							  1,1,1,1,1},
+							 {1,1,1,1,1,
+							  1,0,0,0,1,
+							  1,1,1,1,1,
+							  0,0,0,0,1,
+							  1,1,1,1,1},
+							};
+
 void setup() {
 	Serial.begin(115200);
 	WiFi.begin(ssid, password);
 	udp.begin(port);
 	Serial.println();
-        FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
+		FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
 
-        int i = 0;
+		int i = 0;
 	while (WiFi.status() != WL_CONNECTED) {
-            delay(50);
-            if (i % 10 == 0) Serial.print(".");
-            CRGB c = CHSV(i++, 255, 64);
-            FastLED.showColor(c);
+			delay(50);
+			if (i % 10 == 0) Serial.print(".");
+			CRGB c = CHSV(i++, 255, 64);
+			FastLED.showColor(c);
 	}
 }
 
@@ -64,9 +116,19 @@ void loop() {
 	int connected = respBuffer[15];
 	Serial.print(connected);
 	Serial.println(" people are connected");
-        for (int i = 0; i < numleds; i++) {
-            leds[i] = CHSV(200, 255, i < connected ? 50 : 0);
-        }
-        FastLED.show();
+	if (connected < 10) {
+		for (int i=0; i<25; i++) {
+			if (sprite[connected][i]) {
+				leds[i] = CRGB::Red;
+			} else {
+				leds[i] = CRGB::Black;
+			}
+		}
+	} else {
+		for (int i = 0; i < numleds; i++) {
+			leds[i] = CHSV(200, 255, i < connected ? 50 : 0);
+		}
+	}
+	FastLED.show();
 	delay(1000);
 }
