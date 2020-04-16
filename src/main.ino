@@ -1,18 +1,13 @@
-#if defined(ARDUINO_ARCH_ESP8266)
-	#include <ESP8266WiFi.h>
-#else
-	#include <WiFi.h>
-#endif
-
-#include <WiFiUdp.h>
 #include <FastLED.h>
-
-const char* ssid = "";
-const char* password = "";
+#include <SPIFFS.h>
+#include <WiFi.h>
+#include <WiFiConfig.h>
+#include <WiFiUdp.h>
 
 const char* address = "revspace.nl";
 const int port = 64738;
 
+const int buttonpin = 39;
 const int ledpin = 27;
 const int numleds = 25;
 CRGB leds[numleds];
@@ -152,19 +147,27 @@ void number(int num) {
 
 void setup() {
 	Serial.begin(115200);
-	WiFi.begin(ssid, password);
-	udp.begin(port);
-	Serial.println();
+	SPIFFS.begin(true);
+	pinMode(buttonpin, INPUT);
+
 	FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
 	FastLED.setBrightness(10);
 
-	int i = 0;
-	while (WiFi.status() != WL_CONNECTED) {
-			delay(50);
-			if (i % 10 == 0) Serial.print(".");
-			CRGB c = CHSV(i++, 255, 64);
-			FastLED.showColor(c);
-	}
+	WiFiConfig.onWaitLoop = []() {
+		static CHSV color(0, 255, 255);
+		color.hue++;
+		FastLED.showColor(color);
+		if (! digitalRead(buttonpin)) WiFiConfig.portal();
+		return 50;
+	};
+	WiFiConfig.onPortalWaitLoop = []() {
+		static CHSV color(0, 255, 255);
+		color.saturation--;
+		FastLED.showColor(color);
+	};
+	WiFiConfig.connect();
+
+	udp.begin(port);
 
 	// number demoreel
 	// for (int i=0; i<5*16-1; i++) {
