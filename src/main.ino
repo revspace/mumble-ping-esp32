@@ -186,9 +186,8 @@ void loop() {
 			.ident = millis()
 		};
 
-		memcpy(reqBuffer, &request, sizeof(request));
 		udp.beginPacket(address, port);
-		udp.write(reqBuffer, 12);
+		udp.write((const uint8_t*) &request, sizeof(request));
 		udp.endPacket();
 
 		udp.parsePacket();
