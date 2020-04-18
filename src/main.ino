@@ -1,7 +1,7 @@
 #include <FastLED.h>
 #include <SPIFFS.h>
 #include <WiFi.h>
-#include <WiFiConfig.h>
+#include <WiFiSettings.h>
 #include <WiFiUdp.h>
 
 const char* address = "revspace.nl";
@@ -153,19 +153,19 @@ void setup() {
 	FastLED.addLeds < WS2812B, ledpin, GRB > (leds, numleds);
 	FastLED.setBrightness(10);
 
-	WiFiConfig.onWaitLoop = []() {
+	WiFiSettings.onWaitLoop = []() {
 		static CHSV color(0, 255, 255);
 		color.hue++;
 		FastLED.showColor(color);
-		if (! digitalRead(buttonpin)) WiFiConfig.portal();
+		if (! digitalRead(buttonpin)) WiFiSettings.portal();
 		return 50;
 	};
-	WiFiConfig.onPortalWaitLoop = []() {
+	WiFiSettings.onPortalWaitLoop = []() {
 		static CHSV color(0, 255, 255);
 		color.saturation--;
 		FastLED.showColor(color);
 	};
-	WiFiConfig.connect();
+	WiFiSettings.connect();
 
 	udp.begin(port);
 
